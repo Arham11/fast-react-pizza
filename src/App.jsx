@@ -4,7 +4,7 @@ import Error from "./ui/Error";
 import Home from "./ui/Home";
 import Menu, { loader as MenuLoader } from "./features/menu/Menu";
 import Cart from "./features/cart/Cart";
-import Order from "./features/order/Order";
+import Order, { loader as OrderLoader } from "./features/order/Order";
 import CreateOrder from "./features/order/CreateOrder";
 import AppLayout from "./ui/AppLayout";
 
@@ -39,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/order/:orderId",
         element: <Order />,
+        loader: OrderLoader,
+        // here the error is handle inside the child component hence the error element will not
+        // bubbl  up to prarent ele
+        errorElement: <Error />,
       },
     ],
   },
