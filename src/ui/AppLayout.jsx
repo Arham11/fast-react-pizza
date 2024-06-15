@@ -7,16 +7,18 @@ function AppLayout() {
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
   return (
-    <>
+    <div className="grid h-screen grid-rows-[auto_1fr_auto]">
       {isLoading && <Loader />}
       <Header />
-      <main>
-        <h1>Content</h1>
-        {/* AppLayout component must content and <Outlet /> component for rendering children routes */}
-        <Outlet />
-      </main>
+      <div className="overflow-y-auto">
+        <main className="mx-auto max-w-3xl">
+          {/* AppLayout component must content and <Outlet /> component for rendering children routes */}
+          <Outlet />
+        </main>
+      </div>
+
       <CartOverview />
-    </>
+    </div>
   );
 }
 
