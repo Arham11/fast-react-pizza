@@ -5,7 +5,6 @@ import MenuItem from "./MenuItem";
 function Menu() {
   // useLoaderData is custom hook to
   const menu = useLoaderData();
-  console.log(menu);
 
   return (
     <ul className="divide-y divide-stone-400 px-2">

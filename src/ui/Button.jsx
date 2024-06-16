@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
-function Button({ children, disabled, to, type }) {
+function Button({ children, disabled, to, type, onClick }) {
   const navigate = useNavigate();
   const base = `inline-block text-sm rounded-full bg-yellow-400 
     font-semibold uppercase tracking-wide text-stone-800
@@ -21,6 +21,17 @@ function Button({ children, disabled, to, type }) {
       <Link to={to} className={styles[type] || styles.primary}>
         {children}
       </Link>
+    );
+
+  if (onClick)
+    return (
+      <button
+        disabled={disabled}
+        onClick={onClick}
+        className={styles[type] || styles.primary}
+      >
+        {children}
+      </button>
     );
 
   return (

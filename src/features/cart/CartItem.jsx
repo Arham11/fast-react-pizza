@@ -1,10 +1,19 @@
 import { formatCurrency } from "../../helpers/helpers";
-import Button from "../../ui/Button";
+import DeleteItem from "./DeleteItem";
 
-// eslint-disable-next-line react/prop-types
+import PropTypes from "prop-types";
+
+CartItem.propTypes = {
+  item: PropTypes.shape({
+    pizzaId: PropTypes.number,
+    name: PropTypes.string,
+    quantity: PropTypes.number,
+    totalPrice: PropTypes.number,
+  }),
+};
+
 function CartItem({ item }) {
-  // eslint-disable-next-line react/prop-types
-  const { name, quantity, totalPrice } = item;
+  const { pizzaId, name, quantity, totalPrice } = item;
 
   return (
     <li className="py-3 sm:flex sm:items-center sm:justify-between">
@@ -13,7 +22,8 @@ function CartItem({ item }) {
       </p>
       <div className="flex items-center justify-between sm:gap-6">
         <p className="font-bond text-sm">{formatCurrency(totalPrice)}</p>
-        <Button type="small">Delete</Button>
+        <DeleteItem />
+        <DeleteItem pizzaId={pizzaId} />
       </div>
     </li>
   );
