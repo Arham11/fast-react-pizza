@@ -2,6 +2,7 @@ import { formatCurrency } from "../../helpers/helpers";
 import DeleteItem from "./DeleteItem";
 
 import PropTypes from "prop-types";
+import UpdateItemQuantity from "./UpdateItemQuantity";
 
 CartItem.propTypes = {
   item: PropTypes.shape({
@@ -22,7 +23,7 @@ function CartItem({ item }) {
       </p>
       <div className="flex items-center justify-between sm:gap-6">
         <p className="font-bond text-sm">{formatCurrency(totalPrice)}</p>
-        <DeleteItem />
+        <UpdateItemQuantity pizzaId={pizzaId} />
         <DeleteItem pizzaId={pizzaId} />
       </div>
     </li>
