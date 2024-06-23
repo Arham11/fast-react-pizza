@@ -5,41 +5,55 @@ const isValidPhone = (str) =>
     str,
   );
 
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
-import { createOrder } from "../../services/apiRestaurant";
+
+import store from "../../store";
+import { clearCart, getCart, getTotalPrice } from "../cart/cartSlice";
 import Button from "../../ui/Button";
+import { formatCurrency } from "../../helpers/helpers";
+import { createOrder } from "../../services/apiRestaurant";
+import EmptyCart from "../cart/EmptyCart";
 // import { createOrder } from '../../services/apiRestaurant';
 
-const fakeCart = [
-  {
-    pizzaId: 12,
-    name: "Mediterranean",
-    quantity: 2,
-    unitPrice: 16,
-    totalPrice: 32,
-  },
-  {
-    pizzaId: 6,
-    name: "Vegetale",
-    quantity: 1,
-    unitPrice: 13,
-    totalPrice: 13,
-  },
-  {
-    pizzaId: 11,
-    name: "Spinach and Mushroom",
-    quantity: 1,
-    unitPrice: 15,
-    totalPrice: 15,
-  },
-];
+// const fakeCart = [
+//   {
+//     pizzaId: 12,
+//     name: "Mediterranean",
+//     quantity: 2,
+//     unitPrice: 16,
+//     totalPrice: 32,
+//   },
+//   {
+//     pizzaId: 6,
+//     name: "Vegetale",
+//     quantity: 1,
+//     unitPrice: 13,
+//     totalPrice: 13,
+//   },
+//   {
+//     pizzaId: 11,
+//     name: "Spinach and Mushroom",
+//     quantity: 1,
+//     unitPrice: 15,
+//     totalPrice: 15,
+//   },
+// ];
 
 function CreateOrder() {
-  // const [withPriority, setWithPriority] = useState(false);
-  const cart = fakeCart;
+  const [withPriority, setWithPriority] = useState(false);
+  const username = useSelector((state) => state.user.username);
+
+  var cart = useSelector(getCart);
   const formErrors = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const totalCartPrice = useSelector(getTotalPrice);
+  const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0;
+  const totalPrice = totalCartPrice + priorityPrice;
+
+  if (!cart.length) return <EmptyCart />;
 
   return (
     <div className="px-4 py-6">
@@ -50,7 +64,13 @@ function CreateOrder() {
       <Form method="POST">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40">First Name</label>
-          <input className="input grow" type="text" name="customer" required />
+          <input
+            className="input grow"
+            type="text"
+            defaultValue={username}
+            name="customer"
+            required
+          />
         </div>
 
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -84,8 +104,8 @@ function CreateOrder() {
             type="checkbox"
             name="priority"
             id="priority"
-            // value={withPriority}
-            // onChange={(e) => setWithPriority(e.target.checked)}
+            value={withPriority}
+            onChange={(e) => setWithPriority(e.target.checked)}
           />
           <label className="font-medium" htmlFor="priority">
             Want to yo give your order priority?
@@ -95,7 +115,9 @@ function CreateOrder() {
         <input type="hidden" name="cart" value={JSON.stringify(cart)} />
         <div>
           <Button disabled={isSubmitting} type="primary">
-            {isSubmitting ? "Please wait .... " : "Order now"}
+            {isSubmitting
+              ? "Please wait .... "
+              : `Order now for ${formatCurrency(totalPrice)}`}
           </Button>
         </div>
       </Form>
@@ -109,7 +131,7 @@ export async function action({ request }) {
   const order = {
     ...data,
     cart: JSON.parse(data.cart),
-    priority: data.priority === "on",
+    priority: data.priority === "true",
   };
 
   const errors = {};
@@ -121,6 +143,12 @@ export async function action({ request }) {
   // if the below call will be made only if there is no order
   const newOrder = await createOrder(order);
   console.log(newOrder.id);
+
+  // since this is not a react component we are not able to use react hooks (store, dispatch etc)
+  // hence we are importing directly the store object
+  //❗MAKE SURE WE DONT OVERUSE this as it disables all the redux performance functionality❗
+
+  store.dispatch(clearCart());
   return redirect(`/order/${newOrder.id}`);
 }
 
